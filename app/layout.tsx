@@ -1,3 +1,5 @@
+import { Header } from "@/components/layouts/header";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import type { Metadata } from "next";
 import { Geist_Mono, Roboto } from "next/font/google";
 import "./globals.css";
@@ -27,9 +29,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html
+      lang="fr"
+      // Suppress hydration warning only for the theme provider to work correctly
+      // Disable it some times to check other hydration issues
+      suppressHydrationWarning
+    >
       <body className={`${geistMono.variable} ${roboto.variable} antialiased`}>
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
