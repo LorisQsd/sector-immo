@@ -1,6 +1,5 @@
-// biome-ignore assist/source/organizeImports: <The auto sort on save doesn't work properly here>
-import { paths } from "@/constants/paths";
 import Link from "next/link";
+import { paths } from "@/constants/paths";
 import { ToggleThemeButton } from "../ui/toggle-theme-button";
 import { Container } from "./container";
 
