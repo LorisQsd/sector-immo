@@ -1,10 +1,11 @@
 import { ToggleThemeButton } from "@/components/ui/toggle-theme-button";
 import { Container } from "./container";
 
-export function Header() {
+export function Header({ children }: { children?: React.ReactNode }) {
   return (
-    <Container asChild>
-      <header className="flex items-center justify-between p-4">
+    <Container className="flex items-center justify-between" asChild>
+      <header>
+        {children}
         <ToggleThemeButton />
       </header>
     </Container>

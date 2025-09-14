@@ -1,3 +1,3 @@
 export default function AdminPage() {
-  return <div>Admin</div>;
+  return <p className="italic text-center">Admin content incoming...</p>;
 }

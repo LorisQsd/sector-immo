@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Roboto } from "next/font/google";
-import { Header } from "@/components/layouts/header";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
 
@@ -42,7 +41,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
           {children}
         </ThemeProvider>
       </body>
