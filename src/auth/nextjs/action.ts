@@ -36,7 +36,7 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
 
   if (!isCorrectPassword) return "Unable to log you in";
 
-  await createUserSession({ id: user.id, role: user.role }, await cookies());
+  await createUserSession({ id: user.id }, await cookies());
 
   redirect("/app");
 }
@@ -67,7 +67,7 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
       .returning({ id: UserTable.id, role: UserTable.role });
 
     if (user == null) return "Unable to create account";
-    await createUserSession({ id: user.id, role: user.role }, await cookies());
+    await createUserSession({ id: user.id }, await cookies());
   } catch {
     return "Unable to create account";
   }

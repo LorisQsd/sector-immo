@@ -1,7 +1,7 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db/db";
-import { SessionTable, userRoles } from "@/db/schema/auth.schema";
+import { SessionTable } from "@/db/schema/auth.schema";
 
 // Seven days in seconds
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
@@ -9,7 +9,6 @@ const COOKIE_SESSION_KEY = "session-id";
 
 const sessionSchema = z.object({
   id: z.string(),
-  role: z.enum(userRoles),
 });
 
 type UserSession = z.infer<typeof sessionSchema>;
@@ -33,25 +32,6 @@ export function getUserFromSession(cookies: Pick<Cookies, "get">) {
   if (sessionId == null) return null;
 
   return getUserSessionById(sessionId);
-}
-
-export async function updateUserSessionData(
-  user: UserSession,
-  cookies: Pick<Cookies, "get">
-) {
-  const sessionId = cookies.get(COOKIE_SESSION_KEY)?.value;
-  if (sessionId == null) return null;
-
-  const parsedUser = sessionSchema.parse(user);
-
-  if (parsedUser.id !== sessionId) return null;
-
-  await db
-    .update(SessionTable)
-    .set({
-      expiresAt: new Date(Date.now() + SESSION_EXPIRATION_SECONDS * 1000),
-    })
-    .where(eq(SessionTable.id, sessionId));
 }
 
 export async function createUserSession(
