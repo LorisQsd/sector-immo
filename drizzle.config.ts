@@ -9,10 +9,10 @@ if (!process.env.DATABASE_URL) {
 
 export default defineConfig({
   schema: [
-    // "./src/db/schema/schema.ts",
-    "./src/db/schema/auth.schema.ts",
+    // "src/db/schema/schema.ts",
+    "src/db/schema/auth.schema.ts",
   ],
-  out: ".src/db/migrations",
+  out: "src/db/migrations",
   dialect: "postgresql",
   // strict: true,
   // verbose: true,
