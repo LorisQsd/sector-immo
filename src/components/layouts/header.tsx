@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { paths } from "@/constants/paths";
+import { paths } from "@/src/constants/paths";
 import { ToggleThemeButton } from "../ui/toggle-theme-button";
 import { Container } from "./container";
 
