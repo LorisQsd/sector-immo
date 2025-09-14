@@ -1,5 +1,5 @@
-import { Container } from "@/src/components/layouts/container";
-import { Button } from "@/src/components/ui/button";
+import { Container } from "@/components/layouts/container";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (

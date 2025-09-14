@@ -8,6 +8,13 @@
       "when": 1757848261715,
       "tag": "0000_concerned_power_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1757849560146,
+      "tag": "0001_purple_bucky",
+      "breakpoints": true
     }
   ]
 }

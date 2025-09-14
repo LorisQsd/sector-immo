@@ -17,3 +17,14 @@ export const UserTable = pgTable("users", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export const SessionTable = pgTable("sessions", {
+  id: uuid().primaryKey().defaultRandom(),
+  userId: uuid().references(() => UserTable.id),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp({ withTimezone: true }).notNull(),
+  updatedAt: timestamp({ withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});

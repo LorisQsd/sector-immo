@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { paths } from "@/src/constants/paths";
-import { ToggleThemeButton } from "../ui/toggle-theme-button";
+import { ToggleThemeButton } from "@/components/ui/toggle-theme-button";
+import { paths } from "@/constants/paths";
 import { Container } from "./container";
 
 export function Header() {
