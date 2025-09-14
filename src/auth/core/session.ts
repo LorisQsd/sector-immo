@@ -1,9 +1,7 @@
-import { eq } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db/db";
 import { SessionTable, userRoles } from "@/db/schema/auth.schema";
-
-const crypto = await import("node:crypto");
 
 // Seven days in seconds
 const SESSION_EXPIRATION_SECONDS = 60 * 60 * 24 * 7;
@@ -54,16 +52,16 @@ export async function updateUserSessionData(
       expiresAt: new Date(Date.now() + SESSION_EXPIRATION_SECONDS * 1000),
     })
     .where(eq(SessionTable.id, sessionId));
-  //   await redisClient.set(`session:${sessionId}`, sessionSchema.parse(user), {
-  //     ex: SESSION_EXPIRATION_SECONDS,
-  //   });
 }
 
 export async function createUserSession(
   user: UserSession,
   cookies: Pick<Cookies, "set">
 ) {
-  const sessionId = crypto.randomBytes(512).toString("hex").normalize();
+  const sessionId = globalThis.crypto.randomUUID();
+
+  // Nettoyer les anciennes sessions de cet utilisateur avant de créer la nouvelle
+  await cleanupUserSessions(user.id);
 
   await db.insert(SessionTable).values({
     id: sessionId,
@@ -83,10 +81,6 @@ export async function updateUserSessionExpiration(
   const user = await getUserSessionById(sessionId);
   if (user == null) return;
 
-  //   await redisClient.set(`session:${sessionId}`, user, {
-  //     ex: SESSION_EXPIRATION_SECONDS,
-  //   });
-
   await db
     .update(SessionTable)
     .set({
@@ -104,7 +98,6 @@ export async function removeUserFromSession(
   if (sessionId == null) return null;
 
   await db.delete(SessionTable).where(eq(SessionTable.id, sessionId));
-  //   await redisClient.del(`session:${sessionId}`);
   cookies.delete(COOKIE_SESSION_KEY);
 }
 
@@ -120,11 +113,75 @@ function setCookie(sessionId: string, cookies: Pick<Cookies, "set">) {
 async function getUserSessionById(sessionId: string) {
   const session = await db.query.SessionTable.findFirst({
     where: eq(SessionTable.id, sessionId),
+    with: {
+      user: {
+        columns: {
+          id: true,
+          role: true,
+        },
+      },
+    },
   });
-  return session;
-  //   const rawUser = await redisClient.get(`session:${sessionId}`);
 
-  //   const { success, data: user } = sessionSchema.safeParse(rawUser);
+  if (!session?.user) return null;
 
-  //   return success ? user : null;
+  return {
+    id: session.user.id,
+    role: session.user.role,
+  };
+}
+
+/**
+ * Nettoie les sessions obsolètes d'un utilisateur
+ * Options disponibles :
+ * - 'all': Supprime toutes les sessions existantes (par défaut, plus sécurisé)
+ * - 'expired': Supprime seulement les sessions expirées
+ * - 'limit': Garde seulement les N sessions les plus récentes
+ */
+async function cleanupUserSessions(
+  userId: string,
+  strategy: "all" | "expired" | "limit" = "all",
+  maxSessions: number = 3
+) {
+  if (strategy === "all") {
+    // Supprimer toutes les sessions existantes de cet utilisateur
+    await db.delete(SessionTable).where(eq(SessionTable.userId, userId));
+  } else if (strategy === "expired") {
+    // Supprimer seulement les sessions expirées
+    await db.delete(SessionTable).where(
+      and(
+        eq(SessionTable.userId, userId),
+        // Sessions expirées (expiresAt < maintenant)
+        sql`${SessionTable.expiresAt} < ${new Date()}`
+      )
+    );
+  } else if (strategy === "limit") {
+    // Garder seulement les N sessions les plus récentes
+    const sessionsToDelete = await db
+      .select({ id: SessionTable.id })
+      .from(SessionTable)
+      .where(eq(SessionTable.userId, userId))
+      .orderBy(desc(SessionTable.createdAt))
+      .offset(maxSessions);
+
+    if (sessionsToDelete.length > 0) {
+      const idsToDelete = sessionsToDelete.map((s) => s.id);
+      await db
+        .delete(SessionTable)
+        .where(inArray(SessionTable.id, idsToDelete));
+    }
+  }
+}
+
+/**
+ * Nettoie toutes les sessions expirées de la base de données
+ * À appeler périodiquement (par exemple, dans un cron job)
+ */
+export async function cleanupExpiredSessions() {
+  const deletedSessions = await db
+    .delete(SessionTable)
+    .where(sql`${SessionTable.expiresAt} < ${new Date()}`)
+    .returning({ id: SessionTable.id });
+
+  return deletedSessions.length;
 }

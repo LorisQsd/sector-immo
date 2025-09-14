@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const userRoles = ["admin", "user"] as const;
@@ -28,3 +29,14 @@ export const SessionTable = pgTable("sessions", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export const userRelations = relations(UserTable, ({ many }) => ({
+  sessions: many(SessionTable),
+}));
+
+export const sessionRelations = relations(SessionTable, ({ one }) => ({
+  user: one(UserTable, {
+    fields: [SessionTable.userId],
+    references: [UserTable.id],
+  }),
+}));

@@ -1,9 +1,6 @@
 import { neon } from "@neondatabase/serverless";
-import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema/auth.schema";
-
-config({ path: ".env.development.local" }); // or .env.local
 
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL is not set");
