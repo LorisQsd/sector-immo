@@ -3,9 +3,10 @@ import {
   getUserFromSession,
   updateUserSessionExpiration,
 } from "./auth/core/session";
+import { paths } from "./constants/paths";
 
-const privateRoutes = ["/app"];
-// const adminRoutes = ["/admin"]
+const privateRoutes = Object.values(paths.protected);
+const adminRoutes = ["/admin"];
 
 export async function middleware(request: NextRequest) {
   const response = (await middlewareAuth(request)) ?? NextResponse.next();
@@ -21,22 +22,22 @@ export async function middleware(request: NextRequest) {
 }
 
 async function middlewareAuth(request: NextRequest) {
-  if (privateRoutes.includes(request.nextUrl.pathname)) {
+  if ((privateRoutes as string[]).includes(request.nextUrl.pathname)) {
     const user = await getUserFromSession(request.cookies);
     if (user == null) {
-      return NextResponse.redirect(new URL("/sign-in", request.url));
+      return NextResponse.redirect(new URL(paths.signIn, request.url));
     }
   }
 
-  //   if (adminRoutes.includes(request.nextUrl.pathname)) {
-  //     const user = await getUserFromSession(request.cookies)
-  //     if (user == null) {
-  //       return NextResponse.redirect(new URL("/sign-in", request.url))
-  //     }
-  //     if (user.role !== "admin") {
-  //       return NextResponse.redirect(new URL("/", request.url))
-  //     }
-  //   }
+  if (adminRoutes.includes(request.nextUrl.pathname)) {
+    const user = await getUserFromSession(request.cookies);
+    if (user == null) {
+      return NextResponse.redirect(new URL(paths.signIn, request.url));
+    }
+    if (user.role !== "admin") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
 }
 
 export const config = {

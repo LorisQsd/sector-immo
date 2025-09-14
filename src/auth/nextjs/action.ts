@@ -10,6 +10,7 @@ import {
   hashPassword,
 } from "@/auth/core/passwordHasher";
 import { createUserSession, removeUserFromSession } from "@/auth/core/session";
+import { paths } from "@/constants/paths";
 import { db } from "@/db/db";
 import { UserTable } from "@/db/schema/auth.schema";
 import { signInSchema, signUpSchema } from "./schemas";
@@ -38,7 +39,7 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
 
   await createUserSession({ id: user.id }, await cookies());
 
-  redirect("/app");
+  redirect(paths.protected.root);
 }
 
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
@@ -72,10 +73,10 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
     return "Unable to create account";
   }
 
-  redirect("/");
+  redirect(paths.root);
 }
 
 export async function logOut() {
   await removeUserFromSession(await cookies());
-  redirect("/");
+  redirect(paths.root);
 }

@@ -1,10 +1,17 @@
+import { redirect } from "next/navigation";
 import type { z } from "zod";
 import { signIn } from "@/auth/nextjs/action";
+import { getCurrentUser } from "@/auth/nextjs/currentUser";
 import type { signInSchema } from "@/auth/nextjs/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { paths } from "@/constants/paths";
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const isUserConnected = await getCurrentUser();
+
+  if (isUserConnected) redirect(paths.protected.root);
+
   async function signInAction(formData: FormData) {
     "use server";
 
