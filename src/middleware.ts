@@ -5,11 +5,23 @@ import {
 } from "./auth/core/session";
 import { paths } from "./constants/paths";
 
+const publicRoutes: string[] = [paths.root];
 const privateRoutes = Object.values(paths.protected);
 const adminRoutes = ["/admin"];
 
 export async function middleware(request: NextRequest) {
   const response = (await middlewareAuth(request)) ?? NextResponse.next();
+
+  if (publicRoutes.includes(request.nextUrl.pathname)) {
+    const user = await getUserFromSession(request.cookies);
+
+    const isAlreadyConnected = user != null;
+
+    if (isAlreadyConnected)
+      return NextResponse.redirect(new URL(paths.protected.root, request.url));
+
+    return NextResponse.next();
+  }
 
   await updateUserSessionExpiration({
     set: (key, value, options) => {
@@ -25,17 +37,17 @@ async function middlewareAuth(request: NextRequest) {
   if ((privateRoutes as string[]).includes(request.nextUrl.pathname)) {
     const user = await getUserFromSession(request.cookies);
     if (user == null) {
-      return NextResponse.redirect(new URL(paths.signIn, request.url));
+      return NextResponse.redirect(new URL(paths.root, request.url));
     }
   }
 
   if (adminRoutes.includes(request.nextUrl.pathname)) {
     const user = await getUserFromSession(request.cookies);
     if (user == null) {
-      return NextResponse.redirect(new URL(paths.signIn, request.url));
+      return NextResponse.redirect(new URL(paths.root, request.url));
     }
     if (user.role !== "admin") {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL(paths.root, request.url));
     }
   }
 }

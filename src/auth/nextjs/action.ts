@@ -15,10 +15,18 @@ import { db } from "@/db/db";
 import { UserTable } from "@/db/schema/auth.schema";
 import { signInSchema, signUpSchema } from "./schemas";
 
-export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
-  const { success, data } = signInSchema.safeParse(unsafeData);
+export async function signInAction(_: unknown, formData: FormData) {
+  const formDataObject = Object.fromEntries(formData) as z.infer<
+    typeof signInSchema
+  >;
 
-  if (!success) return "Unable to log you in";
+  const { success, data, error } = signInSchema.safeParse(formDataObject);
+
+  if (!success) {
+    return {
+      errors: error.flatten().fieldErrors,
+    };
+  }
 
   const user = await db.query.UserTable.findFirst({
     columns: { password: true, salt: true, id: true, email: true, role: true },
@@ -26,7 +34,11 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
   });
 
   if (user == null || user.password == null || user.salt == null) {
-    return "Unable to log you in";
+    return {
+      errors: {
+        email: ["No user found in database"],
+      },
+    };
   }
 
   const isCorrectPassword = await comparePasswords({
@@ -35,11 +47,17 @@ export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
     salt: user.salt,
   });
 
-  if (!isCorrectPassword) return "Unable to log you in";
+  if (!isCorrectPassword)
+    return {
+      errors: {
+        password: ["Mot de passe incorrect"],
+      },
+    };
 
   await createUserSession({ id: user.id }, await cookies());
 
-  redirect(paths.protected.root);
+  const isAdmin = user.role === "admin";
+  redirect(isAdmin ? paths.protected.admin.root : paths.protected.root);
 }
 
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
@@ -73,7 +91,7 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
     return "Unable to create account";
   }
 
-  redirect(paths.root);
+  redirect(paths.protected.root);
 }
 
 export async function logOut() {
