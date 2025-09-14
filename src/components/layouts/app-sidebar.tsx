@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { paths } from "@/constants/paths";
 import { Skeleton } from "../ui/skeleton";
+import LoadingIndicator from "./connected-header/link-loader";
 
 async function AdminButton() {
   const user = await getCurrentUser();
@@ -30,6 +31,7 @@ async function AdminButton() {
       <Link href={paths.protected.admin.root}>
         <SettingsIcon />
         <span>Admin</span>
+        <LoadingIndicator />
       </Link>
     </SidebarMenuButton>
   );
@@ -49,6 +51,7 @@ export function AppSidebar() {
                   <Link href={paths.protected.root}>
                     <MapPinned />
                     <span>Secteur</span>
+                    <LoadingIndicator />
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
