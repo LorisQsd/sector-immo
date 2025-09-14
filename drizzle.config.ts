@@ -8,10 +8,20 @@ if (!process.env.DATABASE_URL) {
 }
 
 export default defineConfig({
-  schema: "./db/schema/schema.ts",
-  out: "./db/migrations",
+  schema: [
+    // "./src/db/schema/schema.ts",
+    "./src/db/schema/auth.schema.ts",
+  ],
+  out: ".src/db/migrations",
   dialect: "postgresql",
+  // strict: true,
+  // verbose: true,
   dbCredentials: {
     url: process.env.DATABASE_URL,
+    // password: env.DB_PASSWORD!,
+    // user: env.DB_USER!,
+    // database: env.DB_NAME!,
+    // host: env.DB_HOST!,
+    // ssl: false,
   },
 });
