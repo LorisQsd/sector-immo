@@ -12,7 +12,7 @@ export function HeaderTitle() {
   };
 
   return (
-    <h1 className="text-2xl ml-6 font-bold">
+    <h1 className="text-2xl ml-6 font-bold hidden md:block">
       {title[pathname as keyof typeof title]}
     </h1>
   );

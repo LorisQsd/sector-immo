@@ -1,5 +1,4 @@
 import { MapPinned, SettingsIcon } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 import { getCurrentUser } from "@/auth/nextjs/currentUser";
 import {
@@ -11,13 +10,12 @@ import {
   SidebarGroupLabel,
   SidebarLogoutButton,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { paths } from "@/constants/paths";
-import { Skeleton } from "../ui/skeleton";
-import LoadingIndicator from "./connected-header/link-loader";
+import { Skeleton } from "../../ui/skeleton";
+import { AppSidebarLink } from "./app-sidebar-link";
 
 async function AdminButton() {
   const user = await getCurrentUser();
@@ -27,13 +25,12 @@ async function AdminButton() {
   if (!isAdmin) return null;
 
   return (
-    <SidebarMenuButton asChild>
-      <Link href={paths.protected.admin.root}>
-        <SettingsIcon />
-        <span>Admin</span>
-        <LoadingIndicator />
-      </Link>
-    </SidebarMenuButton>
+    <AppSidebarLink
+      href={paths.protected.admin.root}
+      iconSlot={<SettingsIcon />}
+    >
+      Admin
+    </AppSidebarLink>
   );
 }
 
@@ -47,13 +44,12 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href={paths.protected.root}>
-                    <MapPinned />
-                    <span>Secteur</span>
-                    <LoadingIndicator />
-                  </Link>
-                </SidebarMenuButton>
+                <AppSidebarLink
+                  href={paths.protected.root}
+                  iconSlot={<MapPinned />}
+                >
+                  Secteur
+                </AppSidebarLink>
               </SidebarMenuItem>
               <Suspense
                 fallback={

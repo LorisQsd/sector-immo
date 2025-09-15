@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/layouts/app-sidebar";
+import { AppSidebar } from "@/components/layouts/app-sidebar/app-sidebar";
 import { ConnectedHeader } from "@/components/layouts/connected-header/connected-header";
 import { Container } from "@/components/layouts/container";
 import { SidebarProvider } from "@/components/ui/sidebar";
