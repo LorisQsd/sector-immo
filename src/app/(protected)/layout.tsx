@@ -13,8 +13,8 @@ export default function ProtectedLayout({
       <AppSidebar />
       <div className="flex flex-col h-dvh w-full">
         <ConnectedHeader />
-        <Container asChild>
-          <main className="relative px-8 py-4 grow">{children}</main>
+        <Container className="relative md:px-16 py-4 grow" asChild>
+          <main>{children}</main>
         </Container>
       </div>
     </SidebarProvider>
