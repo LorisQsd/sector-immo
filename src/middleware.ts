@@ -7,7 +7,7 @@ import { paths } from "./constants/paths";
 
 const publicRoutes: string[] = [paths.root];
 const privateRoutes = Object.values(paths.protected);
-const adminRoutes = ["/admin"];
+const adminRoutes = Object.values(paths.protected.admin);
 
 export async function middleware(request: NextRequest) {
   const response = (await middlewareAuth(request)) ?? NextResponse.next();
@@ -41,7 +41,7 @@ async function middlewareAuth(request: NextRequest) {
     }
   }
 
-  if (adminRoutes.includes(request.nextUrl.pathname)) {
+  if ((adminRoutes as string[]).includes(request.nextUrl.pathname)) {
     const user = await getUserFromSession(request.cookies);
     if (user == null) {
       return NextResponse.redirect(new URL(paths.root, request.url));

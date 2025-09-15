@@ -57,7 +57,7 @@ export async function signInAction(_: unknown, formData: FormData) {
   await createUserSession({ id: user.id }, await cookies());
 
   const isAdmin = user.role === "admin";
-  redirect(isAdmin ? paths.protected.admin.root : paths.protected.root);
+  redirect(isAdmin ? paths.protected.admin.team : paths.protected.root);
 }
 
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {

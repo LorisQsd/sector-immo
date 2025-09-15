@@ -1,6 +1,10 @@
-import { MapPinned, SettingsIcon } from "lucide-react";
-import { Suspense } from "react";
+import { ChevronRight, MapPinned, Settings } from "lucide-react";
 import { getCurrentUser } from "@/auth/nextjs/currentUser";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -10,14 +14,16 @@ import {
   SidebarGroupLabel,
   SidebarLogoutButton,
   SidebarMenu,
+  SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { paths } from "@/constants/paths";
-import { Skeleton } from "../../ui/skeleton";
 import { AppSidebarLink } from "./app-sidebar-link";
 
-async function AdminButton() {
+async function AdminMenuItem() {
   const user = await getCurrentUser();
 
   const isAdmin = user?.role === "admin";
@@ -25,12 +31,31 @@ async function AdminButton() {
   if (!isAdmin) return null;
 
   return (
-    <AppSidebarLink
-      href={paths.protected.admin.root}
-      iconSlot={<SettingsIcon />}
-    >
-      Admin
-    </AppSidebarLink>
+    <Collapsible defaultOpen className="group/collapsible">
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton>
+            <Settings />
+            Admin
+            <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            <SidebarMenuSubItem>
+              <AppSidebarLink href={paths.protected.admin.team}>
+                Equipe
+              </AppSidebarLink>
+            </SidebarMenuSubItem>
+            <SidebarMenuSubItem>
+              <AppSidebarLink href={paths.protected.admin.permissions}>
+                Permissions
+              </AppSidebarLink>
+            </SidebarMenuSubItem>
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
   );
 }
 
@@ -51,16 +76,8 @@ export function AppSidebar() {
                   Secteur
                 </AppSidebarLink>
               </SidebarMenuItem>
-              <Suspense
-                fallback={
-                  <div className="flex gap-2 h-8 items-center px-2">
-                    <Skeleton className="rounded-full size-4" />
-                    <Skeleton className="w-10 h-4" />
-                  </div>
-                }
-              >
-                <AdminButton />
-              </Suspense>
+
+              <AdminMenuItem />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -5,6 +5,8 @@ export const paths = {
   protected: {
     admin: {
       root: "/admin",
+      permissions: "/admin/permissions",
+      team: "/admin/team",
     },
     root: "/app",
   },

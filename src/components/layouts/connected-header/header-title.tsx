@@ -8,7 +8,8 @@ export function HeaderTitle() {
 
   const title = {
     [paths.protected.root]: "Secteur",
-    [paths.protected.admin.root]: "Admin",
+    [paths.protected.admin.team]: "Equipe",
+    [paths.protected.admin.permissions]: "Permissions",
   };
 
   return (
