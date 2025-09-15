@@ -1,7 +1,7 @@
-import { paths } from "./paths";
+import { PATHS } from "./paths";
 
 export const PAGE_TITLES = {
-  [paths.protected.root]: "Secteur",
-  [paths.protected.admin.team]: "Equipe",
-  [paths.protected.admin.permissions]: "Permissions",
+  [PATHS.protected.root]: "Secteur",
+  [PATHS.protected.admin.team]: "Equipe",
+  [PATHS.protected.admin.permissions]: "Permissions",
 } as const;

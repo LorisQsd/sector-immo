@@ -20,7 +20,7 @@ import {
   SidebarMenuSubItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { paths } from "@/constants/paths";
+import { PATHS } from "@/constants/paths";
 import { AppSidebarLink } from "./app-sidebar-link";
 
 async function AdminMenuItem() {
@@ -43,12 +43,12 @@ async function AdminMenuItem() {
         <CollapsibleContent>
           <SidebarMenuSub>
             <SidebarMenuSubItem>
-              <AppSidebarLink href={paths.protected.admin.team}>
+              <AppSidebarLink href={PATHS.protected.admin.team}>
                 Equipe
               </AppSidebarLink>
             </SidebarMenuSubItem>
             <SidebarMenuSubItem>
-              <AppSidebarLink href={paths.protected.admin.permissions}>
+              <AppSidebarLink href={PATHS.protected.admin.permissions}>
                 Permissions
               </AppSidebarLink>
             </SidebarMenuSubItem>
@@ -70,7 +70,7 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <AppSidebarLink
-                  href={paths.protected.root}
+                  href={PATHS.protected.root}
                   iconSlot={<MapPinned />}
                 >
                   Secteur

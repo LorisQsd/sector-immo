@@ -5,12 +5,12 @@ import { getCurrentUser } from "@/auth/nextjs/currentUser";
 import type { signUpSchema } from "@/auth/nextjs/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { paths } from "@/constants/paths";
+import { PATHS } from "@/constants/paths";
 
 export default async function SignUpPage() {
   const isUserConnected = await getCurrentUser();
 
-  if (isUserConnected) redirect(paths.protected.root);
+  if (isUserConnected) redirect(PATHS.protected.root);
   async function signUpAction(formData: FormData) {
     "use server";
 
