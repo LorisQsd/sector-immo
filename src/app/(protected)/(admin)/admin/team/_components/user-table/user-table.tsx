@@ -18,7 +18,8 @@ export function UserTable() {
         <TableRow>
           <TableHead>Nom utilisateur</TableHead>
           <TableHead>Email</TableHead>
-          <TableHead>Actif depuis</TableHead>
+          <TableHead>Créé le</TableHead>
+          <TableHead>Statut de vérification</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

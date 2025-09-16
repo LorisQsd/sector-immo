@@ -1,3 +1,4 @@
+import { CheckCircle, XCircle } from "lucide-react";
 import { unstable_cache } from "next/cache";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { CACHE_REVALIDATE } from "@/constants/cache-revalidate";
@@ -18,7 +19,7 @@ export async function UserTableRows() {
 
   const users = await getCachedUsers();
 
-  return users.map(({ id, name, email, createdAt }) => (
+  return users.map(({ id, name, email, createdAt, isVerified }) => (
     <TableRow key={id}>
       <TableCell>{name}</TableCell>
       <TableCell>{email}</TableCell>
@@ -26,6 +27,17 @@ export async function UserTableRows() {
         {createdAt instanceof Date
           ? formatDate(createdAt)
           : formatDate(new Date(createdAt))}
+      </TableCell>
+      <TableCell>
+        {isVerified ? (
+          <span className="text-green-500 font-bold flex items-center gap-2">
+            <CheckCircle className="size-4" /> Vérifié
+          </span>
+        ) : (
+          <span className="text-red-500 font-bold flex items-center gap-2">
+            <XCircle className="size-4" /> Non vérifié
+          </span>
+        )}
       </TableCell>
     </TableRow>
   ));

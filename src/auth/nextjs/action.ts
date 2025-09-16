@@ -12,10 +12,10 @@ import {
   hashPassword,
 } from "@/auth/core/passwordHasher";
 import { createUserSession, removeUserFromSession } from "@/auth/core/session";
+import { CACHE_TAGS } from "@/constants/cache-tags";
 import { PATHS } from "@/constants/paths";
 import { db } from "@/db/db";
 import { UserTable } from "@/db/schema/auth.schema";
-import { CACHE_TAGS } from "../../constants/cache-tags";
 import { signInSchema, signUpSchema } from "./schemas";
 
 export async function signInAction(_: unknown, formData: FormData) {
@@ -32,14 +32,21 @@ export async function signInAction(_: unknown, formData: FormData) {
   }
 
   const user = await db.query.UserTable.findFirst({
-    columns: { password: true, salt: true, id: true, email: true, role: true },
+    columns: {
+      password: true,
+      salt: true,
+      id: true,
+      email: true,
+      role: true,
+      isVerified: true,
+    },
     where: eq(UserTable.email, data.email),
   });
 
   if (user == null || user.password == null || user.salt == null) {
     return {
       errors: {
-        email: ["No user found in database"],
+        email: ["Aucun utilisateur trouvé dans la base de données"],
       },
     };
   }
@@ -60,19 +67,28 @@ export async function signInAction(_: unknown, formData: FormData) {
   await createUserSession({ id: user.id }, await cookies());
 
   const isAdmin = user.role === "admin";
-  redirect(isAdmin ? PATHS.protected.admin.team : PATHS.protected.root);
+  if (isAdmin) {
+    redirect(PATHS.protected.admin.team);
+  }
+
+  if (!user.isVerified) {
+    redirect(PATHS.accountVerification);
+  }
+
+  redirect(PATHS.protected.root);
 }
 
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
   const { success, data } = signUpSchema.safeParse(unsafeData);
 
-  if (!success) return "Unable to create account";
+  if (!success) return "Impossible de créer le compte";
 
   const existingUser = await db.query.UserTable.findFirst({
     where: eq(UserTable.email, data.email),
   });
 
-  if (existingUser != null) return "Account already exists for this email";
+  if (existingUser != null)
+    return "Le compte existe déjà pour cette adresse email";
 
   try {
     const salt = generateSalt();
@@ -85,13 +101,15 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
         email: data.email,
         password: hashedPassword,
         salt,
+        isVerified: false,
+        isActive: true,
       })
       .returning({ id: UserTable.id, role: UserTable.role });
 
-    if (user == null) return "Unable to create account";
+    if (user == null) return "Impossible de créer le compte";
     await createUserSession({ id: user.id }, await cookies());
   } catch {
-    return "Unable to create account";
+    return "Impossible de créer le compte";
   }
 
   redirect(PATHS.protected.root);
@@ -109,7 +127,9 @@ export async function signUpAction(_: unknown, formData: FormData) {
   });
 
   if (existingUser != null)
-    return { errors: { email: ["Account already exists for this email"] } };
+    return {
+      errors: { email: ["Le compte existe déjà avec cette adresse email"] },
+    };
 
   try {
     const salt = generateSalt();
@@ -122,16 +142,20 @@ export async function signUpAction(_: unknown, formData: FormData) {
         email: data.email,
         password: hashedPassword,
         salt,
+        isVerified: false,
+        isActive: true,
       })
       .returning({ id: UserTable.id, role: UserTable.role });
 
-    if (user == null)
-      return { errors: { email: ["Unable to create account"] } };
+    if (user == null) {
+      return { errors: { email: ["Impossible de créer le compte"] } };
+    }
   } catch {
-    return { errors: { email: ["Unable to create account"] } };
+    return { errors: { email: ["Impossible de créer le compte"] } };
   }
   revalidatePath(PATHS.protected.admin.team);
   revalidateTag(CACHE_TAGS.getAllUsers);
+  return { success: true };
 }
 
 export async function logOut() {

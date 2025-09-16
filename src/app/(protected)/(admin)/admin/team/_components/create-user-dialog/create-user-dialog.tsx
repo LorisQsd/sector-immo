@@ -1,4 +1,6 @@
+"use client";
 import { PlusIcon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,8 +14,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { CreateUserForm } from "./create-user-form";
 
 export function CreateUserDialog() {
+  const [open, setOpen] = useState(false);
+
+  const closeDialog = () => {
+    setOpen(false);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="ml-auto">
           <PlusIcon />
@@ -28,7 +36,7 @@ export function CreateUserDialog() {
               Seul les administrateurs peuvent créer un utilisateur.
             </DialogDescription>
           </DialogHeader>
-          <CreateUserForm />
+          <CreateUserForm closeDialog={closeDialog} />
         </ScrollArea>
       </DialogContent>
     </Dialog>

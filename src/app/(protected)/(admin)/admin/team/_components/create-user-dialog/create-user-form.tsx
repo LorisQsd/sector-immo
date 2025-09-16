@@ -2,8 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InfoIcon, LoaderCircle } from "lucide-react";
-import Form from "next/form";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { signUpAction } from "@/auth/nextjs/action";
@@ -19,27 +18,35 @@ import {
 } from "@/components/ui/tooltip";
 import { createUserSchema } from "./create-user.schema";
 
-export function CreateUserForm() {
-  const [state, action, pending] = useActionState(signUpAction, null);
+export function CreateUserForm({ closeDialog }: { closeDialog: () => void }) {
+  const [serverState, action, pending] = useActionState(signUpAction, null);
   const {
     register,
-    formState: { errors },
+    formState: { errors: clientErrors, isValid },
   } = useForm<z.infer<typeof createUserSchema>>({
     resolver: zodResolver(createUserSchema),
     mode: "onBlur",
   });
 
-  // TODO: Find a way to prevent execution the form action when the form is not valid
+  const hasClientErrors = Object.keys(clientErrors).length > 0;
+
+  useEffect(() => {
+    if (serverState?.success) {
+      closeDialog();
+    }
+  }, [serverState?.success, closeDialog]);
 
   return (
-    <Form action={action} className="space-y-4 mt-4 px-2" autoComplete="off">
+    <form action={action} className="space-y-4 mt-4 px-2" autoComplete="off">
       <div>
         <Label htmlFor="name" className="mb-2">
           Nom
         </Label>
         <Input id="name" type="text" required {...register("name")} />
-        {state?.errors?.name && (
-          <ErrorMessage className="text-xs">{state.errors.name}</ErrorMessage>
+        {serverState?.errors?.name && (
+          <ErrorMessage className="text-xs">
+            {serverState.errors.name}
+          </ErrorMessage>
         )}
       </div>
 
@@ -54,9 +61,14 @@ export function CreateUserForm() {
           id="email"
           {...register("email")}
         />
-        {errors.email && (
+        {clientErrors.email && (
           <ErrorMessage className="text-xs">
-            {errors.email.message}
+            {clientErrors.email.message}
+          </ErrorMessage>
+        )}
+        {serverState?.errors?.email && (
+          <ErrorMessage className="text-xs">
+            {serverState.errors.email}
           </ErrorMessage>
         )}
       </div>
@@ -84,9 +96,14 @@ export function CreateUserForm() {
           type="password"
           required
         />
-        {errors.password && (
+        {clientErrors.password && (
           <ErrorMessage className="text-xs">
-            {errors.password.message}
+            {clientErrors.password.message}
+          </ErrorMessage>
+        )}
+        {serverState?.errors?.password && (
+          <ErrorMessage className="text-xs">
+            {serverState.errors.password}
           </ErrorMessage>
         )}
       </div>
@@ -100,23 +117,28 @@ export function CreateUserForm() {
           type="password"
           required
         />
-        {errors.passwordConfirmation && (
+        {clientErrors.passwordConfirmation && (
           <ErrorMessage className="text-xs">
-            {errors.passwordConfirmation.message}
+            {clientErrors.passwordConfirmation.message}
+          </ErrorMessage>
+        )}
+        {serverState?.errors?.passwordConfirmation && (
+          <ErrorMessage className="text-xs">
+            {serverState.errors.passwordConfirmation}
           </ErrorMessage>
         )}
       </div>
 
-      <DialogFooter className="mt-6">
+      <DialogFooter className="mt-6 pb-1">
         <DialogClose asChild>
           <Button variant="outline">Annuler</Button>
         </DialogClose>
 
-        <Button disabled={pending}>
+        <Button type="submit" disabled={hasClientErrors || pending || !isValid}>
           {pending && <LoaderCircle className="animate-spin" />}
           Créer
         </Button>
       </DialogFooter>
-    </Form>
+    </form>
   );
 }

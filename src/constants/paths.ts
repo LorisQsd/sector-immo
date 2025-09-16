@@ -2,6 +2,7 @@ export const PATHS = {
   root: "/",
   signIn: "/sign-in",
   signUp: "/sign-up",
+  accountVerification: "/account-verification",
   protected: {
     admin: {
       root: "/admin",

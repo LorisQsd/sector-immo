@@ -9,6 +9,7 @@ export const getAllUsers = async () => {
       name: true,
       email: true,
       createdAt: true,
+      isVerified: true,
     },
     where: eq(UserTable.role, "user"),
   });
