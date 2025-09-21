@@ -3,13 +3,25 @@ import {
   getUserFromSession,
   updateUserSessionExpiration,
 } from "./auth/core/session";
-import { paths } from "./constants/paths";
+import { PATHS } from "./constants/paths";
 
-const privateRoutes = Object.values(paths.protected);
-const adminRoutes = ["/admin"];
+const publicRoutes: string[] = [PATHS.root];
+const privateRoutes = Object.values(PATHS.protected);
+const adminRoutes = Object.values(PATHS.protected.admin);
 
 export async function middleware(request: NextRequest) {
   const response = (await middlewareAuth(request)) ?? NextResponse.next();
+
+  if (publicRoutes.includes(request.nextUrl.pathname)) {
+    const user = await getUserFromSession(request.cookies);
+
+    const isAlreadyConnected = user?.isVerified;
+
+    if (isAlreadyConnected)
+      return NextResponse.redirect(new URL(PATHS.protected.root, request.url));
+
+    return NextResponse.next();
+  }
 
   await updateUserSessionExpiration({
     set: (key, value, options) => {
@@ -24,18 +36,18 @@ export async function middleware(request: NextRequest) {
 async function middlewareAuth(request: NextRequest) {
   if ((privateRoutes as string[]).includes(request.nextUrl.pathname)) {
     const user = await getUserFromSession(request.cookies);
-    if (user == null) {
-      return NextResponse.redirect(new URL(paths.signIn, request.url));
+    if (user === null || !user.isVerified) {
+      return NextResponse.redirect(new URL(PATHS.root, request.url));
     }
   }
 
-  if (adminRoutes.includes(request.nextUrl.pathname)) {
+  if ((adminRoutes as string[]).includes(request.nextUrl.pathname)) {
     const user = await getUserFromSession(request.cookies);
-    if (user == null) {
-      return NextResponse.redirect(new URL(paths.signIn, request.url));
+    if (user === null) {
+      return NextResponse.redirect(new URL(PATHS.root, request.url));
     }
     if (user.role !== "admin") {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL(PATHS.root, request.url));
     }
   }
 }

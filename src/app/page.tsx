@@ -1,19 +1,19 @@
-import Link from "next/link";
 import { Container } from "@/components/layouts/container";
-import { Button } from "@/components/ui/button";
-import { paths } from "@/constants/paths";
+import { Header } from "@/components/layouts/header";
+import { SignInCard } from "./_components/SignInCard";
 
-export default function Home() {
+export default async function Home() {
   return (
-    <Container size="sub" asChild>
-      <main>
-        <Button asChild variant="link">
-          <Link href={paths.signUp}>Sign Up</Link>
-        </Button>
-        <Button asChild variant="link">
-          <Link href={paths.signIn}>Sign In</Link>
-        </Button>
-      </main>
-    </Container>
+    <>
+      <Header />
+      <Container size="sub" asChild>
+        <main>
+          <h1 className="text-2xl font-bold text-center mb-10">
+            Bienvenue sur Sector Immo
+          </h1>
+          <SignInCard />
+        </main>
+      </Container>
+    </>
   );
 }

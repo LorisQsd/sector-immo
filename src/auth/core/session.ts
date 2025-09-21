@@ -98,6 +98,7 @@ async function getUserSessionById(sessionId: string) {
         columns: {
           id: true,
           role: true,
+          isVerified: true,
         },
       },
     },
@@ -108,6 +109,7 @@ async function getUserSessionById(sessionId: string) {
   return {
     id: session.user.id,
     role: session.user.role,
+    isVerified: session.user.isVerified,
   };
 }
 

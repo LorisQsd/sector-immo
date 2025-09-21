@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { paths } from "@/constants/paths";
+import { PATHS } from "@/constants/paths";
 import { db } from "@/db/db";
 import { UserTable } from "@/db/schema/auth.schema";
 import { getUserFromSession } from "../core/session";
@@ -40,7 +40,7 @@ async function _getCurrentUser({
   const user = await getUserFromSession(await cookies());
 
   if (user == null) {
-    if (redirectIfNotFound) return redirect(paths.signIn);
+    if (redirectIfNotFound) return redirect(PATHS.signIn);
     return null;
   }
 

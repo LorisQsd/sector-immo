@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 export const userRoles = ["admin", "user"] as const;
 export type UserRole = (typeof userRoles)[number];
@@ -12,6 +19,8 @@ export const UserTable = pgTable("users", {
   password: text(),
   salt: text(),
   role: userRoleEnum().notNull().default("user"),
+  isVerified: boolean().notNull().default(false), // Used to verify the user for his first connection
+  isActive: boolean().notNull().default(true), // Used to deactivate the user
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true })
     .notNull()
