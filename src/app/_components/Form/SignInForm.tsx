@@ -1,4 +1,5 @@
 "use client";
+import { XCircle } from "lucide-react";
 import { useActionState } from "react";
 import { signInAction } from "@/auth/nextjs/action";
 import { LoadingButton } from "@/components/common/loading-button";
@@ -32,6 +33,13 @@ export function SignInForm() {
           )}
         </div>
       </div>
+
+      {state?.errors?.inactive && (
+        <ErrorMessage className="mt-4 font-bold">
+          <XCircle className="size-4 inline align-text-top" />{" "}
+          {state.errors.inactive}
+        </ErrorMessage>
+      )}
 
       <LoadingButton isLoading={pending} className="w-full mt-6" type="submit">
         Se connecter

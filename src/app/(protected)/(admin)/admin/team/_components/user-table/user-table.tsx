@@ -1,32 +1,20 @@
 import { Suspense } from "react";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableHeadingDecorator } from "@/components/common/table-decorator";
+import { TableBody } from "@/components/ui/table";
 import { UserTableRows } from "./user-table-rows";
 import { UserTableRowsSkeleton } from "./user-table-rows.skeleton";
 
 export function UserTable() {
   return (
-    <Table>
-      <TableCaption>Liste des utilisateurs</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Nom utilisateur</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Créé le</TableHead>
-          <TableHead>Statut de vérification</TableHead>
-        </TableRow>
-      </TableHeader>
+    <TableHeadingDecorator
+      caption="Liste des utilisateurs"
+      titles={["Nom", "Email", "Créé le", "Statut de vérification"]}
+    >
       <TableBody>
         <Suspense fallback={<UserTableRowsSkeleton />}>
           <UserTableRows />
         </Suspense>
       </TableBody>
-    </Table>
+    </TableHeadingDecorator>
   );
 }
