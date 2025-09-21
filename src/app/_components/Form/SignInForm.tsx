@@ -1,8 +1,7 @@
 "use client";
-import { LoaderCircle } from "lucide-react";
 import { useActionState } from "react";
 import { signInAction } from "@/auth/nextjs/action";
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/common/loading-button";
 import { ErrorMessage } from "@/components/ui/error-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,9 +33,9 @@ export function SignInForm() {
         </div>
       </div>
 
-      <Button disabled={pending} className="w-full mt-6" type="submit">
-        {pending ? <LoaderCircle className="animate-spin" /> : "Se connecter"}
-      </Button>
+      <LoadingButton isLoading={pending} className="w-full mt-6" type="submit">
+        Se connecter
+      </LoadingButton>
     </form>
   );
 }

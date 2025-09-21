@@ -5,6 +5,7 @@ import { Container } from "@/components/layouts/container";
 import { Header } from "@/components/layouts/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PATHS } from "@/constants/paths";
+import { NewPasswordForm } from "./_components/new-password-form";
 
 export default async function AccountVerificationPage() {
   const user = await getUserFromSession(await cookies());
@@ -22,11 +23,11 @@ export default async function AccountVerificationPage() {
           <Card className="w-full max-w-sm mx-auto">
             <CardHeader>
               <CardTitle className="text-center">
-                Créez votre nouveau mote de passe
+                Créez votre nouveau mot de passe
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-center italic">form incoming...</p>
+              <NewPasswordForm userId={user.id} />
             </CardContent>
           </Card>
         </main>

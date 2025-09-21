@@ -16,7 +16,7 @@ import { CACHE_TAGS } from "@/constants/cache-tags";
 import { PATHS } from "@/constants/paths";
 import { db } from "@/db/db";
 import { UserTable } from "@/db/schema/auth.schema";
-import { signInSchema, signUpSchema } from "./schemas";
+import { signInSchema, signUpSchema, updatePasswordSchema } from "./schemas";
 
 export async function signInAction(_: unknown, formData: FormData) {
   const formDataObject = Object.fromEntries(formData) as z.infer<
@@ -156,6 +156,46 @@ export async function signUpAction(_: unknown, formData: FormData) {
   revalidatePath(PATHS.protected.admin.team);
   revalidateTag(CACHE_TAGS.getAllUsers);
   return { success: true };
+}
+
+export async function updatePasswordAction(
+  // Bound to the userId
+  userId: string,
+  // Initial state
+  _: unknown,
+  formData: FormData
+) {
+  const { success, data, error } = updatePasswordSchema.safeParse(
+    Object.fromEntries(formData)
+  );
+
+  if (!success) return { errors: error.flatten().fieldErrors };
+
+  const user = await db.query.UserTable.findFirst({
+    where: eq(UserTable.id, userId),
+    columns: {
+      id: true,
+    },
+  });
+
+  if (user == null) {
+    console.error("User not found while trying to update password");
+    return;
+  }
+
+  const salt = generateSalt();
+  const hashedPassword = await hashPassword(data.password, salt);
+
+  await db
+    .update(UserTable)
+    .set({ password: hashedPassword, salt, isVerified: true })
+    .where(eq(UserTable.id, user.id));
+
+  await createUserSession({ id: user.id }, await cookies());
+
+  revalidatePath(PATHS.protected.admin.team);
+  revalidateTag(CACHE_TAGS.getAllUsers);
+  redirect(PATHS.protected.root);
 }
 
 export async function logOut() {
