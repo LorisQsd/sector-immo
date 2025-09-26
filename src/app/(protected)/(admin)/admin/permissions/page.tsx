@@ -9,7 +9,7 @@ export default function AdminPermissionsPage() {
   return (
     <>
       <p className="text-sm mb-4">
-        <InfoIcon className="size-4 mr-2 inline align-text-top" />
+        <InfoIcon className="size-4 mr-2 !inline align-text-top" />
         Si vous désactivez une permission, l'utilisateur ne pourra plus accéder
         à l'application mais les données qui lui sont associées seront
         conservées.

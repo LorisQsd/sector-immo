@@ -18,6 +18,7 @@ export function PermissionSwitch({
     setIsActiveState(isActive);
     const action = await updatePermissionAction(id, isActive);
     if (!action?.success) {
+      console.error("Failed to update permission");
       setIsActiveState((prev) => !prev);
     }
   };

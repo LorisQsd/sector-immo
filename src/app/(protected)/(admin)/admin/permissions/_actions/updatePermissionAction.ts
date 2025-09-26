@@ -31,13 +31,9 @@ export async function updatePermissionAction(
       const sessionId = await db.query.SessionTable.findFirst({
         where: eq(SessionTable.userId, userId),
       });
-      if (!sessionId) {
-        console.error(
-          "Session not found while trying to delete it because of setting the user as inactive"
-        );
-        return { success: false };
+      if (sessionId) {
+        await db.delete(SessionTable).where(eq(SessionTable.id, sessionId.id));
       }
-      await db.delete(SessionTable).where(eq(SessionTable.id, sessionId.id));
     }
   } catch {
     return { success: false };
