@@ -15,6 +15,27 @@
       "when": 1758051665967,
       "tag": "0001_illegal_liz_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758913007023,
+      "tag": "0002_stiff_vermin",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1758918250917,
+      "tag": "0003_chilly_wolverine",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1758919967584,
+      "tag": "0004_wealthy_edwin_jarvis",
+      "breakpoints": true
     }
   ]
 }

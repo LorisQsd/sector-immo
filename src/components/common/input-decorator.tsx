@@ -27,10 +27,16 @@ export const InputDecorator = ({
       {label}
     </Label>
     <Input id={name} name={name} type="text" required {...slotProps?.input} />
-    {errorMessage && errorMessage.length > 0 && (
-      <ErrorMessage className="text-xs" {...slotProps?.errorMessage}>
-        {errorMessage}
-      </ErrorMessage>
-    )}
+    {errorMessage &&
+      errorMessage.length > 0 &&
+      errorMessage.map((error) => (
+        <ErrorMessage
+          className="text-xs"
+          {...slotProps?.errorMessage}
+          key={error}
+        >
+          {error}
+        </ErrorMessage>
+      ))}
   </div>
 );
