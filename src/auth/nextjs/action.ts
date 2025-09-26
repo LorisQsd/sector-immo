@@ -18,7 +18,16 @@ import { db } from "@/db/db";
 import { UserTable } from "@/db/schema/auth.schema";
 import { signInSchema, signUpSchema, updatePasswordSchema } from "./schemas";
 
-export async function signInAction(_: unknown, formData: FormData) {
+export async function signInAction(
+  _: unknown,
+  formData: FormData
+): Promise<{
+  errors: {
+    email?: string[];
+    password?: string[];
+    inactive?: string[];
+  };
+}> {
   const formDataObject = Object.fromEntries(formData) as z.infer<
     typeof signInSchema
   >;
@@ -39,6 +48,7 @@ export async function signInAction(_: unknown, formData: FormData) {
       email: true,
       role: true,
       isVerified: true,
+      isActive: true,
     },
     where: eq(UserTable.email, data.email),
   });
@@ -61,6 +71,15 @@ export async function signInAction(_: unknown, formData: FormData) {
     return {
       errors: {
         password: ["Mot de passe incorrect"],
+      },
+    };
+
+  if (!user.isActive)
+    return {
+      errors: {
+        password: undefined,
+        email: undefined,
+        inactive: ["Vous n'avez plus accès à cette application"],
       },
     };
 

@@ -10,5 +10,6 @@ export const PATHS = {
       team: "/admin/team",
     },
     root: "/app",
+    messages: "/messages",
   },
 } as const;

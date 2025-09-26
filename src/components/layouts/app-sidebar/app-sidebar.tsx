@@ -1,4 +1,9 @@
-import { ChevronRight, MapPinned, Settings } from "lucide-react";
+import {
+  ChevronRight,
+  MapPinned,
+  MessageCircleMore,
+  Settings,
+} from "lucide-react";
 import { getCurrentUser } from "@/auth/nextjs/currentUser";
 import {
   Collapsible,
@@ -8,11 +13,9 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarLogoutButton,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -21,6 +24,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { PATHS } from "@/constants/paths";
+import { AppSidebarFooter } from "./app-sidebar-footer";
 import { AppSidebarLink } from "./app-sidebar-link";
 
 async function AdminMenuItem() {
@@ -77,15 +81,22 @@ export function AppSidebar() {
                 </AppSidebarLink>
               </SidebarMenuItem>
 
+              <SidebarMenuItem>
+                <AppSidebarLink
+                  href={PATHS.protected.messages}
+                  iconSlot={<MessageCircleMore />}
+                >
+                  Messages
+                </AppSidebarLink>
+              </SidebarMenuItem>
+
               <AdminMenuItem />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
-        <SidebarLogoutButton />
-      </SidebarFooter>
+      <AppSidebarFooter />
     </Sidebar>
   );
 }

@@ -2,9 +2,9 @@
 
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronLeft, LogOut, Menu } from "lucide-react";
+import { ChevronLeft, LoaderCircle, LogOut, Menu } from "lucide-react";
 import * as React from "react";
-import { logOut } from "@/auth/nextjs/action";
+import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -739,14 +739,18 @@ function SidebarMenuSubButton({
 function SidebarLogoutButton(
   props: Omit<React.ComponentProps<typeof SidebarMenuButton>, "children">
 ) {
+  const { pending } = useFormStatus();
   return (
     <SidebarMenuButton
       className="cursor-pointer text-destructive group/logout hover:text-destructive flex justify-center"
-      onClick={() => logOut()}
+      disabled={pending}
       {...props}
     >
-      <LogOut className="group-hover/logout:translate-x-0.5 transition-transform duration-200" />
-
+      {pending ? (
+        <LoaderCircle className="animate-spin" />
+      ) : (
+        <LogOut className="group-hover/logout:translate-x-0.5 transition-transform duration-200" />
+      )}
       <span>Déconnexion</span>
     </SidebarMenuButton>
   );
